@@ -3,16 +3,16 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 
-// ... (Interface definition is the same)
+// --- (Interface definition is the same) ---
 interface AnalysisResult {
   verdict: "Low Risk" | "Medium Risk" | "High Risk";
   summary: string;
-  goodPoints: (string | object)[]; // <-- Type updated
-  cautionPoints: (string | object)[]; // <-- Type updated
-  redFlags: (string | object)[]; // <-- Type updated
+  goodPoints: (string | object)[];
+  cautionPoints: (string | object)[];
+  redFlags: (string | object)[];
 }
 
-// A helper component to render the points lists with nice styling
+// --- (PointsList component is the same, no changes needed here) ---
 const PointsList = ({
   title,
   points,
@@ -50,9 +50,8 @@ const PointsList = ({
   );
 };
 
-// ... (The rest of the AnalyzerTool component is the same)
 export default function AnalyzerTool() {
-  // ... state variables ...
+  // --- (State management and functions are the same) ---
   const [activeTab, setActiveTab] = useState<"url" | "text" | "file">("url");
   const [url, setUrl] = useState("");
   const [inputText, setInputText] = useState("");
@@ -72,11 +71,9 @@ export default function AnalyzerTool() {
     setIsLoading(true);
     setResult(null);
     setError(null);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let requestBody: any;
     const headers: Record<string, string> = {};
-
     try {
       if (activeTab === "url" || activeTab === "text") {
         const bodyObject = activeTab === "url" ? { url } : { text: inputText };
@@ -88,13 +85,11 @@ export default function AnalyzerTool() {
         formData.append("file", selectedFile);
         requestBody = formData;
       }
-
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: headers,
         body: requestBody,
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Something went wrong");
       setResult(data);
@@ -109,16 +104,21 @@ export default function AnalyzerTool() {
     }
   };
 
+  // --- THE FIX IS HERE: We now use our custom colors ---
   const verdictStyles = {
-    "Low Risk": "bg-green-500/20 text-green-400 border-green-500",
-    "Medium Risk": "bg-yellow-500/20 text-yellow-400 border-yellow-500",
-    "High Risk": "bg-red-500/20 text-red-400 border-red-500",
+    "Low Risk":
+      "bg-verdict-low-bg text-verdict-low-text border-verdict-low-text",
+    "Medium Risk":
+      "bg-verdict-medium-bg text-verdict-medium-text border-verdict-medium-text",
+    "High Risk":
+      "bg-verdict-high-bg text-verdict-high-text border-verdict-high-text",
   };
 
   return (
     <div className="w-full max-w-3xl mx-auto">
-      {/* --- TABS & FORM --- */}
+      {/* --- (Tabs & Form JSX is the same) --- */}
       <div className="flex border-b border-border-gray mb-4">
+        {" "}
         <button
           onClick={() => setActiveTab("url")}
           className={`py-2 px-6 font-semibold transition-colors duration-200 ${
@@ -128,7 +128,7 @@ export default function AnalyzerTool() {
           }`}
         >
           URL
-        </button>
+        </button>{" "}
         <button
           onClick={() => setActiveTab("text")}
           className={`py-2 px-6 font-semibold transition-colors duration-200 ${
@@ -138,7 +138,7 @@ export default function AnalyzerTool() {
           }`}
         >
           Text
-        </button>
+        </button>{" "}
         <button
           onClick={() => setActiveTab("file")}
           className={`py-2 px-6 font-semibold transition-colors duration-200 ${
@@ -148,10 +148,12 @@ export default function AnalyzerTool() {
           }`}
         >
           File
-        </button>
+        </button>{" "}
       </div>
       <div className="pt-4">
+        {" "}
         <form onSubmit={handleSubmit}>
+          {" "}
           {activeTab === "url" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <label
@@ -170,7 +172,7 @@ export default function AnalyzerTool() {
                 className="w-full p-3 rounded-md bg-gray-800 border border-border-gray focus:ring-2 focus:ring-brand-blue focus:outline-none transition-all"
               />
             </motion.div>
-          )}
+          )}{" "}
           {activeTab === "text" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <label
@@ -189,7 +191,7 @@ export default function AnalyzerTool() {
                 className="w-full p-3 rounded-md bg-gray-800 border border-border-gray focus:ring-2 focus:ring-brand-blue focus:outline-none transition-all"
               />
             </motion.div>
-          )}
+          )}{" "}
           {activeTab === "file" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <label
@@ -237,7 +239,7 @@ export default function AnalyzerTool() {
                 />
               </label>
             </motion.div>
-          )}
+          )}{" "}
           <div className="mt-6">
             <button
               type="submit"
@@ -272,11 +274,11 @@ export default function AnalyzerTool() {
                 "Analyze"
               )}
             </button>
-          </div>
-        </form>
+          </div>{" "}
+        </form>{" "}
       </div>
 
-      {/* --- NEW RESULTS DISPLAY --- */}
+      {/* --- RESULTS DISPLAY --- */}
       <div className="mt-12 text-left w-full">
         {error && (
           <motion.div
@@ -308,19 +310,19 @@ export default function AnalyzerTool() {
               title="Good Points"
               points={result.goodPoints}
               icon="✓"
-              colorClass="text-green-400 border-green-500"
+              colorClass="text-verdict-low-text border-verdict-low-text"
             />
             <PointsList
               title="Points of Caution"
               points={result.cautionPoints}
               icon="⚠️"
-              colorClass="text-yellow-400 border-yellow-500"
+              colorClass="text-verdict-medium-text border-verdict-medium-text"
             />
             <PointsList
               title="Red Flags"
               points={result.redFlags}
               icon="❌"
-              colorClass="text-red-400 border-red-500"
+              colorClass="text-verdict-high-text border-verdict-high-text"
             />
           </motion.div>
         )}
@@ -328,3 +330,4 @@ export default function AnalyzerTool() {
     </div>
   );
 }
+// --- END OF ANALYZER TOOL COMPONENT ---
