@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AgreeWise.ai - Your Personal AI Legal Analyst", // <-- UPDATED TITLE
-  description: "Understand any Terms & Conditions or Privacy Policy in seconds with our AI-powered analysis.", // <-- UPDATED DESCRIPTION
+  description:
+    "Understand any Terms & Conditions or Privacy Policy in seconds with our AI-powered analysis.", // <-- UPDATED DESCRIPTION
 };
 
 export default function RootLayout({
@@ -17,10 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en" className="dark:" suppressHydrationWarning={true}>
       <body className={`${inter.className} bg-gray-900 text-white`}>
         <Navbar /> {/* <-- ADD NAVBAR HERE */}
-        <main className="pt-16"> {/* Add padding-top to prevent content from hiding under the fixed navbar */}
+        <main className="pt-16">
+          {" "}
+          {/* Add padding-top to prevent content from hiding under the fixed navbar */}
           {children}
         </main>
         <Footer /> {/* <-- ADD FOOTER HERE */}
