@@ -1,0 +1,19 @@
+{
+  "projectDescription": "Agreewise AI - A Next.js application that provides AI-powered analysis and insights",
+  "languageSettings": {
+    "typescript": {
+      "suggestions": true,
+      "tests": true
+    }
+  },
+  "contextPaths": [
+    "src/app/**/*",
+    "src/components/**/*",
+    "src/lib/**/*"
+  ],
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/node_modules/**"
+  ]
+}

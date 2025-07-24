@@ -1,68 +1,68 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
+import OpenAI from "openai"; // We still use the OpenAI library!
 import * as cheerio from "cheerio";
-import {NextResponse} from "next/server";
 
-// IMPORTANT: Access your API key from the environment variables
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+// Instantiate the client, but tell it to use Groq's servers
+const groq = new OpenAI({
+  baseURL: "https://api.groq.com/openai/v1", // <-- THE FIRST CHANGE
+  apiKey: process.env.GROQ_API_KEY,
+});
 
-// The main function that handles POST requests
 export async function POST(req: Request) {
-  // 1. Extract the 'url' from the request body
-  const { url } = await req.json();
-
-  if (!url) {
-    return NextResponse.json({ error: "URL is required" }, { status: 400 });
-  }
-
   try {
-    // 2. Fetch the HTML content from the user-provided URL
-    const response = await fetch(url);
-    const html = await response.text();
+    const { url, text } = await req.json();
+    let textContent: string = "";
 
-    // 3. Use Cheerio to parse the HTML and extract the text
-    const $ = cheerio.load(html);
-    // Remove script and style elements to clean up the text
-    $("script, style, nav, footer, header").remove();
-    const textContent = $("body").text().replace(/\s\s+/g, " ").trim();
-
-    if (!textContent) {
-      return NextResponse.json({ error: "Could not extract text content from the URL." }, { status: 500 });
+    if (url) {
+      const response = await fetch(url);
+      const html = await response.text();
+      const $ = cheerio.load(html);
+      $("script, style, nav, footer, header").remove();
+      textContent = $("body").text().replace(/\s\s+/g, " ").trim();
+    } else if (text) {
+      textContent = text;
     }
 
-    // 4. Craft the prompt for the AI
-    const prompt = `
-      As an expert legal analyst named 'AgreeWise', your task is to analyze the following Terms & Conditions or Privacy Policy text.
-      Provide a clear, concise, and easy-to-understand summary.
-      Identify and list the most critical clauses, both positive and negative, that a user must be aware of.
-      Focus on data privacy, content ownership, liability, arbitration, and cancellation terms.
+    if (!textContent) {
+      return NextResponse.json(
+        { error: "No content provided to analyze." },
+        { status: 400 }
+      );
+    }
 
-      Return your analysis ONLY as a valid JSON object with two keys:
-      1. "summary": A brief, one-to-two sentence overall summary of the policy.
-      2. "keyPoints": An array of strings, where each string is a single, crucial point from the text.
+    // Call the Groq API using the OpenAI-compatible method
+    const completion = await groq.chat.completions.create({
+      model: "llama3-8b-8192", // <-- THE SECOND CHANGE (using a Llama 3 model)
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert legal analyst named AgreeWise. Your task is to analyze the provided text and return a valid JSON object with two keys: 'summary' (a brief, one-sentence summary) and 'keyPoints' (an array of the most critical string bullet points).",
+        },
+        {
+          role: "user",
+          content: textContent.substring(0, 8000), // Llama's context window is smaller, so we send less text
+        },
+      ],
+    });
 
-      Do not include any introductory text, apologies, or explanations outside of the JSON object.
+    const responseText = completion.choices[0].message.content;
+    if (!responseText) {
+      throw new Error(
+        "AI failed to generate a valid response (content was null)."
+      );
+    }
 
-      Here is the text to analyze:
-      ---
-      ${textContent.substring(0, 20000)}
-      ---
-    `;
-
-    // 5. Call the AI model and get the response
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const aiResponseText = result.response.text();
-
-    // 6. Clean up and parse the AI response
-    // The AI might sometimes wrap its JSON in backticks, so we clean it.
-    const cleanedJsonString = aiResponseText.replace(/```json/g, "").replace(/```/g, "").trim();
-    const jsonResponse = JSON.parse(cleanedJsonString);
-
-    // 7. Send the structured JSON back to the client
+    const jsonResponse = JSON.parse(responseText);
     return NextResponse.json(jsonResponse);
-
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to analyze the URL." }, { status: 500 });
+    console.error("Error in /api/analyze:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred.";
+    return NextResponse.json(
+      { error: `AI generation failed: ${errorMessage}` },
+      { status: 500 }
+    );
   }
 }
