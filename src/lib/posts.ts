@@ -1,11 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import { remark } from "remark";
+import html from "remark-html";
 
 // Get the directory where our blog posts are stored
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory = path.join(process.cwd(), "posts");
 
 // This function gets all posts and sorts them by date
 export function getSortedPostsData() {
@@ -13,11 +13,11 @@ export function getSortedPostsData() {
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
     // Remove ".mdx" from file name to get id
-    const id = fileName.replace(/\.mdx$/, '');
+    const id = fileName.replace(/\.mdx$/, "");
 
     // Read markdown file as string
     const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, "utf8");
 
     // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
@@ -25,7 +25,11 @@ export function getSortedPostsData() {
     // Combine the data with the id
     return {
       id,
-      ...(matterResult.data as { title: string; date: string; summary: string }),
+      ...(matterResult.data as {
+        title: string;
+        date: string;
+        summary: string;
+      }),
     };
   });
 
@@ -40,21 +44,17 @@ export function getSortedPostsData() {
 }
 
 // This function gets all possible IDs (file names) for dynamic routing
+// This function gets all possible IDs (file names) for dynamic routing
 export function getAllPostIds() {
   const fileNames = fs.readdirSync(postsDirectory);
-  return fileNames.map((fileName) => {
-    return {
-      params: {
-        id: fileName.replace(/\.mdx$/, ''),
-      },
-    };
-  });
+  // Returns an array of strings: [ '5-red-flags', 'ai-and-legal-docs', ... ]
+  return fileNames.map((fileName) => fileName.replace(/\.mdx$/, ""));
 }
 
 // This function gets the data for a single post by its ID
 export async function getPostData(id: string) {
   const fullPath = path.join(postsDirectory, `${id}.mdx`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+  const fileContents = fs.readFileSync(fullPath, "utf8");
 
   // Use gray-matter to parse the post metadata section
   const matterResult = matter(fileContents);

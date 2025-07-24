@@ -14,9 +14,12 @@ export async function generateMetadata({
     description: postData.summary,
   };
 }
+// This function tells Next.js which pages to pre-build
 export async function generateStaticParams() {
-  const paths = getAllPostIds();
-  return paths.map((path) => ({ id: path.params.id }));
+  const ids = getAllPostIds(); // This now returns a simple string array
+  return ids.map((id) => ({
+    id: id,
+  }));
 }
 
 // --- The Page Component (with the styling fix) ---
