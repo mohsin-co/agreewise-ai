@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import Logo from './Logo'; // <-- IMPORT THE LOGO COMPONENT
+import Link from "next/link";
+import Logo from "./Logo"; // <-- IMPORT THE LOGO COMPONENT
 
 export default function Navbar() {
   return (
@@ -10,17 +10,11 @@ export default function Navbar() {
           <div className="flex-shrink-0">
             <Logo /> {/* <-- USE THE LOGO COMPONENT */}
           </div>
-          
+
           {/* Navigation Links */}
           <div className="hidden sm:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <Link 
-                href="/blog" 
-                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Blog
-              </Link>
-              <Link 
+              <Link
                 href="/about" // <-- ADDED ABOUT LINK
                 className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >

@@ -1,26 +1,28 @@
-import { MetadataRoute } from 'next';
-import { getSortedPostsData } from '@/lib/posts';
+import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getSortedPostsData();
-  const postUrls = posts.map(({ id }) => ({
-    url: `https://www.agreewise.ai/blog/${id}`,
-    lastModified: new Date(),
-  }));
+  // Base URLs for the site
+  const baseUrl = "https://www.agreewise.ai";
 
-  return [
+  // Static pages
+  const staticUrls = [
     {
-      url: 'https://www.agreewise.ai',
+      url: `${baseUrl}`,
       lastModified: new Date(),
     },
     {
-      url: 'https://www.agreewise.ai/about',
+      url: `${baseUrl}/about`,
       lastModified: new Date(),
     },
     {
-      url: 'https://www.agreewise.ai/blog',
+      url: `${baseUrl}/privacy`,
       lastModified: new Date(),
     },
-    ...postUrls,
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+    },
   ];
+
+  return staticUrls;
 }

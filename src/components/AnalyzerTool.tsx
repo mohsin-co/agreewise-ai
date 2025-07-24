@@ -3,13 +3,13 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 
-// New interface for our "Smart Analysis" response
+// ... (Interface definition is the same)
 interface AnalysisResult {
   verdict: "Low Risk" | "Medium Risk" | "High Risk";
   summary: string;
-  goodPoints: string[];
-  cautionPoints: string[];
-  redFlags: string[];
+  goodPoints: (string | object)[]; // <-- Type updated
+  cautionPoints: (string | object)[]; // <-- Type updated
+  redFlags: (string | object)[]; // <-- Type updated
 }
 
 // A helper component to render the points lists with nice styling
@@ -20,11 +20,11 @@ const PointsList = ({
   colorClass,
 }: {
   title: string;
-  points: string[];
+  points: (string | object)[];
   icon: string;
   colorClass: string;
 }) => {
-  if (points.length === 0) return null;
+  if (!points || points.length === 0) return null;
   return (
     <div>
       <h3 className={`text-2xl font-bold border-b-2 pb-2 mb-4 ${colorClass}`}>
@@ -40,7 +40,9 @@ const PointsList = ({
             className="flex items-start gap-3 p-4 rounded-md bg-gray-800"
           >
             <span className={`mt-1 font-bold ${colorClass}`}>{icon}</span>
-            <p className="text-light-gray">{point}</p>
+            <p className="text-light-gray">
+              {typeof point === "string" ? point : JSON.stringify(point)}
+            </p>
           </motion.li>
         ))}
       </ul>
@@ -48,7 +50,9 @@ const PointsList = ({
   );
 };
 
+// ... (The rest of the AnalyzerTool component is the same)
 export default function AnalyzerTool() {
+  // ... state variables ...
   const [activeTab, setActiveTab] = useState<"url" | "text" | "file">("url");
   const [url, setUrl] = useState("");
   const [inputText, setInputText] = useState("");
@@ -64,7 +68,6 @@ export default function AnalyzerTool() {
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    // ... (handleSubmit function is the same as the last version, no changes needed here)
     event.preventDefault();
     setIsLoading(true);
     setResult(null);
@@ -115,7 +118,6 @@ export default function AnalyzerTool() {
   return (
     <div className="w-full max-w-3xl mx-auto">
       {/* --- TABS & FORM --- */}
-      {/* This part remains the same as our last working version */}
       <div className="flex border-b border-border-gray mb-4">
         <button
           onClick={() => setActiveTab("url")}
@@ -150,7 +152,6 @@ export default function AnalyzerTool() {
       </div>
       <div className="pt-4">
         <form onSubmit={handleSubmit}>
-          {/* ... all the tab content (url, text, file inputs) ... */}
           {activeTab === "url" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <label
@@ -293,7 +294,6 @@ export default function AnalyzerTool() {
             animate={{ opacity: 1 }}
             className="space-y-12"
           >
-            {/* Verdict Section */}
             <div
               className={`p-6 rounded-lg border ${
                 verdictStyles[result.verdict]
@@ -304,8 +304,6 @@ export default function AnalyzerTool() {
               </h3>
               <p className="text-lg">{result.summary}</p>
             </div>
-
-            {/* Points Lists */}
             <PointsList
               title="Good Points"
               points={result.goodPoints}
