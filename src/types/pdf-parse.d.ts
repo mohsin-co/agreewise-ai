@@ -2,10 +2,10 @@ declare module "pdf-parse/lib/pdf-parse" {
   interface PDFData {
     text: string;
     numpages: number;
-    info: any;
-    metadata: any;
+    info: never;
+    metadata: never;
   }
 
-  function pdf(dataBuffer: Buffer, options?: any): Promise<PDFData>;
+  function pdf(dataBuffer: Buffer, options?: never): Promise<PDFData>;
   export default pdf;
 }

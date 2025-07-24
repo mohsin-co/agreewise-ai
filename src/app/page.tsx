@@ -31,8 +31,9 @@ export default function HomePage() {
             <span className="text-brand-blue">AI Legal Analyst</span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-light-gray">
-            Stop clicking 'I Agree' blindly. Paste any privacy policy or terms
-            of service to get a clear, simple summary of what really matters.
+            Stop clicking &apos;I Agree&apos; blindly. Paste any privacy policy
+            or terms of service to get a clear, simple summary of what really
+            matters.
           </p>
         </section>
       </AnimatedSection>
@@ -60,7 +61,9 @@ export default function HomePage() {
               <div className="bg-blue-500/20 text-blue-300 rounded-full h-16 w-16 flex items-center justify-center text-2xl font-bold mb-4">
                 2
               </div>
-              <h3 className="text-xl font-semibold mb-2">Click 'Analyze'</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Click &apos;Analyze&apos;
+              </h3>
               <p className="text-light-gray">
                 Our AI reads and analyzes the full text in seconds.
               </p>
@@ -86,12 +89,12 @@ export default function HomePage() {
               accurate and relevant than generic chatbots.
             </FeatureCard>
             <FeatureCard title="Secure & Private">
-              Your privacy is paramount. We don't store the policies you scan or
-              link them to you.
+              Your privacy is paramount. We don&apos;t store the policies you
+              scan or link them to you.
             </FeatureCard>
             <FeatureCard title="Instant Results">
-              Don't waste hours reading dense legal documents. Get the insights
-              you need in a matter of seconds.
+              Don&apos;t waste hours reading dense legal documents. Get the
+              insights you need in a matter of seconds.
             </FeatureCard>
           </div>
         </section>

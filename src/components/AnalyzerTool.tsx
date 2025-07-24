@@ -70,6 +70,7 @@ export default function AnalyzerTool() {
     setResult(null);
     setError(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let requestBody: any;
     const headers: Record<string, string> = {};
 
